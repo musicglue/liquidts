@@ -13,6 +13,14 @@ Installation:
 npm install --save liquidts
 ```
 
+## Rendering
+
+Performance with strings in Node is atrocious, so we try and avoid manipulating them wherever possible. There is a naive
+implementation of a "write buffer" in this library that concatenates all writes into an array and then joins it when the
+consumer reads it. This is a lot faster than working on a "state" string, but still could be better. The options object
+that `.render` accepts as its third argument allows you to pass a `writer: Writeable` in to allow you to implement this
+yourself.
+
 ## Render from String
 
 Parse and Render:

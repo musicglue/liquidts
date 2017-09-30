@@ -1,4 +1,5 @@
 const { Suite } = require("benchmark");
+const { PassThrough } = require("stream");
 const Liquid = require("../dist").default;
 
 const fs = require("fs");
@@ -13,11 +14,18 @@ const tmpl = engine.parse(raw);
 
 suite
   .add("parsing", () => engine.parse(raw))
-  .add("rendering", {
+  .add("render:writebuffer", {
     defer: true,
     fn(deferred) {
-      engine.render(tmpl, vars).then(res => res.read()).then(() => deferred.resolve());
-    }
+      engine.render(tmpl, vars).then(() => deferred.resolve());
+    },
+  })
+  .add("render:passthrough", {
+    defer: true,
+    fn(deferred) {
+      const writer = new PassThrough();
+      engine.render(tmpl, vars, { writer }).then(() => deferred.resolve());
+    },
   })
   .on("cycle", event => {
     // tslint:disable-next-line:no-console

@@ -76,6 +76,7 @@ export interface Options {
   root?: string[];
   strictFilters?: boolean;
   strictVariables?: boolean;
+  writer?: Writeable;
 }
 
 export interface ResolvedOptions extends Options {

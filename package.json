@@ -4,7 +4,8 @@
   "description": "A Liquid template engine for modern Node.js, with all shopify/liquid features.",
   "main": "dist/index.js",
   "scripts": {
-    "bench": "NODE_ENV=production node --ignition --turbo benchmarks/index.js",
+    "bench": "npm run build && npm run bench:only",
+    "bench:only": "NODE_ENV=production node --ignition --turbo benchmarks/index.js",
     "build": "rm -rf dist/ && NODE_ENV=production tsc",
     "format": "prettier --write --parser typescript --trailing-comma all --list-different --print-width 100 'src/**/*.ts'",
     "test:generate": "node benchmarks/generate.js && open benchmarks/generated.html",

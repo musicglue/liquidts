@@ -1,7 +1,16 @@
+import { map } from "lodash";
 import { evalExp } from "./syntax";
 import { TagInstance } from "./tagInstance";
 import { ControlTemplate, OutputTemplate, Scope, Template, Writeable } from "./types";
 import { RenderBreakError, RenderError } from "./util/error";
+
+const renderCatcher = (template: Template) => (err: Error) => {
+  if (err instanceof RenderBreakError) {
+    err.resolvedHTML = "FIXME";
+    throw err;
+  }
+  throw new RenderError(err, template);
+};
 
 // tslint:disable:no-this
 export class Renderer {
@@ -11,14 +20,8 @@ export class Renderer {
     writer: Writeable,
   ): Promise<void> {
     await Promise.all(
-      templates.map(template =>
-        this.renderTemplate(template, scope, writer).catch((err: Error) => {
-          if (err instanceof RenderBreakError) {
-            err.resolvedHTML = "FIXME";
-            throw err;
-          }
-          throw new RenderError(err, template);
-        }),
+      map(templates, template =>
+        this.renderTemplate(template, scope, writer).catch(renderCatcher(template)),
       ),
     );
   }
@@ -30,11 +33,13 @@ export class Renderer {
   ): Promise<void> => {
     switch (template.type) {
       case "tag":
-        return this.renderTag(template, scope, writer);
+        await this.renderTag(template, scope, writer);
+        break;
       case "output":
-        return this.evalOutput(template, scope, writer);
+        await this.evalOutput(template, scope, writer);
+        break;
       case "control":
-        return;
+        break;
       default:
         writer.write(template.value);
     }

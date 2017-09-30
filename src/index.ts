@@ -1,3 +1,4 @@
+import { fromNullable } from "fp-ts/lib/Option";
 import * as _ from "lodash";
 import * as path from "path";
 import { WriteBuffer } from "./buffer";
@@ -50,23 +51,22 @@ export class Engine implements EnginePrototype {
   }
 
   public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
-    const options = _.assign({}, this.options, opts);
+    const options = Object.assign({}, this.options, opts);
     const scope = new Scope(ctx, [], options);
-    const writer = new WriteBuffer();
+    const writer = fromNullable(options.writer).getOrElse(() => new WriteBuffer());
     await this.renderer.renderTemplates(_.castArray(tpl), scope, writer);
     return writer;
   }
 
   public parseAndRender(html: string, ctx?: any, opts?: Options) {
-    return Promise.resolve()
-      .then(() => this.parse(html))
-      .then(tpl => this.render(tpl, ctx, opts));
+    const tpls = this.parse(html);
+    return this.render(tpls, ctx, opts);
   }
 
   public renderFile(filepath: string, ctx: any, opts: Options) {
-    opts = _.assign({}, opts);
+    const options = Object.assign({}, opts);
     return this.getTemplate(filepath, opts.root).then(templates =>
-      this.render(templates, ctx, opts),
+      this.render(templates, ctx, options),
     );
   }
 

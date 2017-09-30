@@ -95,7 +95,4 @@ export const filters: Dict<Function> = {
 };
 
 export const registerAll = (liquid: Engine) =>
-  Object.keys(filters).forEach(filter => {
-    // tslint:disable-next-line:no-expression-statement
-    liquid.registerFilter(filter, filters[filter]);
-  });
+  Object.keys(filters).forEach(filter => liquid.registerFilter(filter, filters[filter]));

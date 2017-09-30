@@ -16,7 +16,7 @@ export class Decrement implements Tag {
 
   public async render(_: Writeable, scope: Scope) {
     const v = scope.get(this.variable);
-    const newV = typeof v !== "number" ? -1 : v - 1;
+    const newV = (typeof v !== "number") ? -1 : v - 1;
     scope.set(this.variable, newV);
   }
 }

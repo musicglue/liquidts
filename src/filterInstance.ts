@@ -2,6 +2,7 @@ import { FilterContext } from "./filterContext";
 import * as lexical from "./lexical";
 import { evalValue } from "./syntax";
 import * as t from "./types";
+import { map } from "lodash";
 
 const valueRE = new RegExp(`${lexical.value.source}`, "g");
 
@@ -48,9 +49,8 @@ export class FilterInstance implements t.FilterInstance {
   }
 
   public render(output: any, scope: any) {
-    const args = this.args.map(arg => evalValue(arg, scope));
-    args.unshift(output);
-    return this.filter.call(null, ...args);
+    const args = map(this.args, arg => evalValue(arg, scope));
+    return this.filter.call(null, output, ...args);
   }
 }
 // tslint:enable:no-class no-this no-object-mutation no-expression-statement ban-types
