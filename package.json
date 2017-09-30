@@ -1,0 +1,85 @@
+{
+  "name": "liquidts",
+  "version": "0.0.1",
+  "description": "A Liquid template engine for modern Node.js, with all shopify/liquid features.",
+  "main": "dist/index.js",
+  "scripts": {
+    "bench": "NODE_ENV=production node --ignition --turbo benchmarks/index.js",
+    "build": "rm -rf dist/ && NODE_ENV=production tsc",
+    "format": "prettier --write --parser typescript --trailing-comma all --list-different --print-width 100 'src/**/*.ts'",
+    "test:generate": "node benchmarks/generate.js && open benchmarks/generated.html",
+    "lint": "tslint -c tslint.json '{src,__tests__}/**/*.{ts,tsx}'",
+    "prepublishOnly": "npm run build",
+    "test": "NODE_ENV=test jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/musicglue/liquidts.git"
+  },
+  "keywords": [
+    "liquid",
+    "template engine",
+    "jinja",
+    "shopify"
+  ],
+  "author": "Music Glue",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/musicglue/liquidts/issues"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/__tests__/support/*.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 20,
+        "functions": 20,
+        "lines": 20,
+        "statements": 20
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "setupTestFrameworkScriptFile": "<rootDir>/__tests__/setup.ts",
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*_test\\.(ts|tsx|js)$"
+  },
+  "homepage": "https://github.com/musicglue/liquidts#readme",
+  "dependencies": {
+    "fp-ts": "^0.5.2",
+    "lodash": "^4.17.4",
+    "strftime": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/benchmark": "^1.0.30",
+    "@types/jest": "^21.1.1",
+    "@types/lodash": "^4.14.76",
+    "@types/node": "^8.0.31",
+    "benchmark": "^2.1.4",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^2.13.1",
+    "istanbul": "^0.4.5",
+    "jest": "^21.2.1",
+    "mocha": "^3.5.3",
+    "mock-fs": "^4.4.1",
+    "prettier": "^1.7.3",
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.13.0",
+    "supertest": "^3.0.0",
+    "ts-jest": "^21.0.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.7.0",
+    "tslint-immutable": "^4.4.0",
+    "typescript": "^2.5.3"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "page": {
+    "title": "Album example",
+    "description": "Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don't simply skip over it entirely.",
+    "photos": [
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." },
+      { "src": "holder.js/100px280/thumb", "description": "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer." }
+    ]
+  },
+  "socials": [
+    { "href": "#", "content": "Follow on Twitter" },
+    { "href": "#", "content": "Like on Facebook" },
+    { "href": "#", "content": "Email me" }
+  ],
+  "title": "Album"
+}

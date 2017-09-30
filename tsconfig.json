@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2017",
+      "esnext.asynciterable"
+    ],
+    "module": "commonjs",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

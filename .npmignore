@@ -1,0 +1,14 @@
+.git/
+.vscode/
+__tests__/
+benchmarks/
+build/
+coverage/
+test/
+src/
+.gitignore
+makefile
+/test.ts
+tsconfig.json
+tslint.json
+.envrc

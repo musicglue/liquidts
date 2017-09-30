@@ -1,0 +1,5 @@
+source "https://rubygems.org"
+
+gem "liquid", ">= 4.0.0"
+gem "liquid-c", "4.0.0.rc1"
+gem "benchmark-ips"
