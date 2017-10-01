@@ -1,6 +1,6 @@
 {
   "name": "liquidts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Liquid template engine for modern Node.js, with all shopify/liquid features.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
