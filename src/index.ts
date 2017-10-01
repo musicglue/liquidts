@@ -41,7 +41,7 @@ export class Engine implements EnginePrototype {
   public parse = (html: string, filepath?: string) => {
     const tokens = tokenizer.parse(html, filepath, this.options);
     return this.parser.parse(tokens);
-  }
+  };
 
   public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
     const options = Object.assign({}, this.options, opts);
@@ -61,9 +61,7 @@ export class Engine implements EnginePrototype {
 
   public renderFile(filepath: string, ctx: any, opts: Options) {
     const options = Object.assign({}, opts);
-    return this
-      .getTemplate(filepath)
-      .then(templates => this.render(templates, ctx, options));
+    return this.getTemplate(filepath).then(templates => this.render(templates, ctx, options));
   }
 
   public async evalOutput(str: string, scope: any): Promise<string> {

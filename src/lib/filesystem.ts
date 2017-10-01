@@ -21,7 +21,9 @@ export class FileSystem implements t.FileSystem {
   public async get(tmplPath: string, parser: t.ParseFn): Promise<t.Template[]> {
     if (this.cacheEnabled === true) {
       const cached = this.cache.get(tmplPath);
-      if (cached !== undefined) { return cached; }
+      if (cached !== undefined) {
+        return cached;
+      }
     }
 
     const sanitised = tmplPath.replace(/\.\./, "");
