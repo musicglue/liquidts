@@ -1,4 +1,9 @@
-import { Engine } from "./index";
+export * from "./filesystem";
+export * from "./options";
+export * from "./parsing";
+
+import { Engine } from "../";
+import { Options } from "./options";
 
 export interface Dict<T> {
   [key: string]: T;
@@ -25,12 +30,11 @@ export interface EnginePrototype {
   render: (tpl: Template, ctx: any, options: Options) => void;
   parseAndRender: (html: string, ctx: any, options: Options) => void;
   renderFile: (filepath: string, ctx: any, options: Options) => void;
-  evalOutput: (str: string, scope: any) => void;
+  evalOutput: (str: string, scope: any) => Promise<string>;
   // tslint:disable-next-line:ban-types
   registerFilter: (name: string, filter: Function) => void;
   registerTag: (name: string, tag: any) => void;
-  lookup: (filepath: string, root?: string[]) => void;
-  getTemplate: (filepath: string, root?: string[]) => void;
+  getTemplate: (filepath: string) => Promise<Template[]>;
 }
 
 // tslint:disable-next-line:ban-types
@@ -67,27 +71,6 @@ export interface LiquidError extends Error {
   input: any;
   line: number;
   originalError: Error;
-}
-
-export interface Options {
-  blocks?: {};
-  cache?: boolean;
-  extname?: string;
-  registers?: Map<string | number, any>;
-  root?: string[];
-  strictFilters?: boolean;
-  strictVariables?: boolean;
-  writer?: Writeable;
-}
-
-export interface ResolvedOptions extends Options {
-  blocks: {};
-  cache: boolean;
-  extname: string;
-  registers: Map<string | number, any>;
-  root: string[];
-  strictFilters: boolean;
-  strictVariables: boolean;
 }
 
 export interface Scope {

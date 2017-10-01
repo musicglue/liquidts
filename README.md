@@ -17,6 +17,11 @@ npm install --save liquidts
 
 - [ ] Performance with large numbers of blocks needs to be investigated, especially in loop situations
 
+## Filesystems
+
+By default, `liquidts` won't attempt to load any files for `Engine#renderFile` or `{% include %}` tags. If you want to use
+file loading, then you can either use the provided file-system based engine, or implement your own.
+
 ## Rendering
 
 Performance with strings in Node is atrocious, so we try and avoid manipulating them wherever possible. There is a naive

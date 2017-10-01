@@ -1,14 +1,17 @@
+import * as path from "path";
 import { Engine, lexical } from "../";
 import { evalValue } from "../syntax";
 import { Dict, Scope, Tag, TagToken, Writeable } from "../types";
 import { assert } from "../util/assert";
 import { TagFactory } from "./utils";
 
+const forRE = new RegExp(`for\\s+(${lexical.value.source})`);
 const withRE = new RegExp(`with\\s+(${lexical.value.source})`);
 
 export class Include implements Tag {
+  public forVal: string | undefined;
   public value: string;
-  public with: string;
+  public with: string | undefined;
   private liquid: Engine;
 
   constructor(liquid: Engine) {
@@ -20,23 +23,41 @@ export class Include implements Tag {
     const match = assert(lexical.value.exec(args));
     this.value = match[0];
 
-    const additional = withRE.exec(args);
-    if (additional) {
-      this.with = additional[1];
+    const withVar = withRE.exec(args);
+    if (withVar) {
+      this.with = withVar[1];
+    }
+
+    const forVar = forRE.exec(args);
+    if (forVar && this.with === undefined) {
+      this.forVal = forVar[1];
     }
   }
 
   public async render(writer: Writeable, scope: Scope, hash: Dict<any>) {
-    const filepath = evalValue(this.value, scope);
-    const register = this.liquid.options;
+    const filepath = scope.evaluate(this.value);
+    const varName = path.basename(filepath);
 
     if (this.with) {
-      hash[filepath] = evalValue(this.with, scope);
+      hash[varName] = evalValue(this.with, scope);
     }
 
-    await this.liquid
-      .getTemplate(filepath, register.root)
-      .then(templates => this.liquid.renderer.renderTemplates(templates, scope.push(hash), writer));
+    const templates = await this.liquid.getTemplate(filepath);
+
+    if (this.forVal) {
+      const resolved = scope.evaluate(this.forVal);
+      if (Array.isArray(resolved)) {
+        for (const item of resolved) {
+          hash[varName] = item;
+          await this.liquid.renderer.renderTemplates(templates, scope.push(hash), writer);
+        }
+        return;
+      } else {
+        hash[varName] = resolved;
+      }
+    }
+
+    await this.liquid.renderer.renderTemplates(templates, scope.push(hash), writer);
   }
 }
 
