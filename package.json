@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A Liquid template engine for modern Node.js, with all shopify/liquid features.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "bench": "npm run build && npm run bench:only",
     "bench:only": "NODE_ENV=production node --ignition --turbo benchmarks/index.js",

@@ -11,20 +11,21 @@ import * as syntax from "./syntax";
 import { TagContext } from "./tagContext";
 import * as tags from "./tags";
 import * as tokenizer from "./tokenizer";
-import { EnginePrototype, FileSystem, Options, ResolvedOptions, Template } from "./types";
+import * as types from "./types";
+import { Options, ResolvedOptions } from "./types";
 import * as errors from "./util/error";
 
 export { FileSystem } from "./lib/filesystem";
 
-export class Engine implements EnginePrototype {
-  public fileSystem: FileSystem | undefined;
-  public options: ResolvedOptions;
+export class Engine implements types.EnginePrototype {
+  public fileSystem: types.FileSystem | undefined;
+  public options: types.ResolvedOptions;
   public tag: TagContext;
   public filter: FilterContext;
   public parser: Parser;
   public renderer: Renderer;
 
-  constructor(options: ResolvedOptions) {
+  constructor(options: types.ResolvedOptions) {
     if (options.fileSystem) {
       this.fileSystem = options.fileSystem;
     }
@@ -43,7 +44,7 @@ export class Engine implements EnginePrototype {
     return this.parser.parse(tokens);
   };
 
-  public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
+  public async render(tpl: types.Template | types.Template[], ctx?: any, opts?: types.Options) {
     const options = Object.assign({}, this.options, opts);
     const registers = fromNullable(options.registers).getOrElse(() => new Map());
 
@@ -54,12 +55,12 @@ export class Engine implements EnginePrototype {
     return writer;
   }
 
-  public parseAndRender(html: string, ctx?: any, opts?: Options) {
+  public parseAndRender(html: string, ctx?: any, opts?: types.Options) {
     const tpls = this.parse(html);
     return this.render(tpls, ctx, opts);
   }
 
-  public renderFile(filepath: string, ctx: any, opts: Options) {
+  public renderFile(filepath: string, ctx: any, opts: types.Options) {
     const options = Object.assign({}, opts);
     return this.getTemplate(filepath).then(templates => this.render(templates, ctx, options));
   }
@@ -80,7 +81,7 @@ export class Engine implements EnginePrototype {
     return this.tag.register(name, tag);
   }
 
-  public getTemplate(filepath: string): Promise<Template[]> {
+  public getTemplate(filepath: string): Promise<types.Template[]> {
     if (this.fileSystem === undefined) {
       return Promise.reject("fileSystem not enabled in this engine");
     }
@@ -98,4 +99,4 @@ export const resolveOptions = (opts?: Options): ResolvedOptions => ({
 
 export default (opts?: Options): Engine => new Engine(resolveOptions(opts));
 
-export { errors, lexical, syntax };
+export { errors, lexical, syntax, types };
