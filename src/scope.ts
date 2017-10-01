@@ -1,18 +1,25 @@
 import { get, set } from "lodash";
+import { evalExp } from "./syntax";
 import * as t from "./types";
 import { assert } from "./util/assert";
 
 const standardisePath = (path: string) => path.replace(/\[/g, ".").replace(/\]/g, "");
 
 export class Scope implements t.Scope {
+  public readonly registers: Map<string | number, any>;
   private readonly scopes: Scope[];
-  private options: t.Options;
+  private options: t.ResolvedOptions;
   private vars: t.Dict<any>;
 
-  constructor(vars: t.Dict<any>, scopes: Scope[] = [], options: t.Options = {}) {
+  constructor(vars: t.Dict<any>, scopes: Scope[] = [], options: t.ResolvedOptions) {
     this.scopes = scopes;
     this.options = options;
     this.vars = vars;
+    this.registers = options.registers;
+  }
+
+  public evaluate(expr: string): any {
+    return evalExp(expr, this);
   }
 
   public get(str: string, standardise: boolean = true): any | undefined {

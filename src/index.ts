@@ -24,18 +24,11 @@ export class Engine implements EnginePrototype {
   public parser: Parser;
   public renderer: Renderer;
 
-  constructor(options: Options) {
+  constructor(options: ResolvedOptions) {
     if (options.cache) {
       this.cache = new Map();
     }
-    this.options = {
-      blocks: _.get(options, "blocks", {}),
-      cache: _.get(options, "cache", false),
-      extname: _.get(options, "extname", ".liquid"),
-      root: _.get(options, "root", []),
-      strictFilters: _.get(options, "strictFilters", false),
-      strictVariables: _.get(options, "strictVariables", false),
-    };
+    this.options = options;
     this.tag = new TagContext();
     this.filter = new FilterContext(options);
     this.parser = new Parser(this.tag, this.filter);
@@ -52,7 +45,10 @@ export class Engine implements EnginePrototype {
 
   public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
     const options = Object.assign({}, this.options, opts);
-    const scope = new Scope(Object.assign({}, ctx), [], options);
+    const registers = fromNullable(options.registers).getOrElse(() => new Map());
+
+    const scope = new Scope(Object.assign({}, ctx), [], { ...options, registers });
+
     const writer = fromNullable(options.writer).getOrElse(() => new WriteBuffer());
     await this.renderer.renderTemplates(_.castArray(tpl), scope, writer);
     return writer;
@@ -137,22 +133,17 @@ const normalizeStringArray = (value: any): string[] => {
   return [];
 };
 
-export default (opts?: Options): Engine => {
-  const options = _.assign(
-    {
-      cache: false,
-      extname: ".liquid",
-      root: ["."],
-      strict_filters: false,
-      strict_variables: false,
-      trimLeft: false,
-      trimRight: false,
-    },
-    opts,
-  );
-  options.root = normalizeStringArray(options.root);
+export const resolveOptions = (opts?: Options): ResolvedOptions => ({
+  blocks: _.get(opts, "blocks", {}),
+  cache: _.get(opts, "cache", false),
+  extname: _.get(opts, "extname", ".liquid"),
+  registers: _.get(opts, "registers", new Map()),
+  root:  normalizeStringArray(_.get(opts, "root", [])),
+  strictFilters: _.get(opts, "strictFilters", false),
+  strictVariables: _.get(opts, "strictVariables", false),
+});
 
-  return new Engine(options);
-};
+export default (opts?: Options): Engine =>
+  new Engine(resolveOptions(opts));
 
 export { errors, lexical, syntax };

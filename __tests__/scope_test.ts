@@ -1,3 +1,4 @@
+import { resolveOptions } from "../src";
 import { Scope } from "../src/scope";
 import { Dict } from "../src/types";
 
@@ -8,7 +9,7 @@ describe("Scope", () => {
   // tslint:enable:no-let
 
   describe("functions present", () => {
-    beforeEach(() => { scope = new Scope(vars); });
+    beforeEach(() => { scope = new Scope(vars, [], resolveOptions({})); });
 
     test("get", () => {
       expect(scope.get).toBeInstanceOf(Function);
@@ -26,7 +27,7 @@ describe("Scope", () => {
   describe("simple behaviour", () => {
     beforeEach(() => {
       vars = { a: 10, b: { c: 20 } };
-      scope = new Scope(vars);
+      scope = new Scope(vars, [], resolveOptions({}));
     });
 
     describe("getters", () => {
@@ -70,7 +71,7 @@ describe("Scope", () => {
     beforeEach(() => {
       parentVars = { a: 10, b: { c: 20 }, f: 5, g: { h: 5 } };
       vars = { c: 20, d: { e: 10 }, f: 10, g: { i: 10 } };
-      parent = new Scope(parentVars);
+      parent = new Scope(parentVars, [], resolveOptions({}));
       scope = parent.push(vars);
     });
 

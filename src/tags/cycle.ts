@@ -1,10 +1,9 @@
-import { toString } from "lodash";
 import { Engine } from "../index";
 import * as lexical from "../lexical";
 import { evalValue } from "../syntax";
 import { Scope, Tag, TagToken, Writeable } from "../types";
 import { assert } from "../util/assert";
-import { md5, TagFactory } from "./utils";
+import { TagFactory } from "./utils";
 
 const groupRE = new RegExp(`^(?:(${lexical.value.source})\\s*:\\s*)?(.*)$`);
 const candidatesRE = new RegExp(lexical.value.source, "g");
@@ -13,7 +12,7 @@ export class Cycle implements Tag {
   private liquid: Engine;
   private candidateCount: number;
   private candidates: string[];
-  private group: any;
+  private group: string | undefined;
 
   constructor(liquid: Engine) {
     this.liquid = liquid;
@@ -26,7 +25,7 @@ export class Cycle implements Tag {
     let match: RegExpExecArray | null;
     match = assert(groupRE.exec(args), `illegal tag: ${tagToken.raw}`);
 
-    this.group = match[1] || "";
+    this.group = match[1] || undefined;
     const candidates = match[2];
 
     // tslint:disable-next-line:no-conditional-assignment
@@ -40,22 +39,24 @@ export class Cycle implements Tag {
   }
 
   public async render(writer: Writeable, scope: Scope) {
-    const group = evalValue(this.group, scope);
-    const fingerprint = md5(`cycle:${toString(group)}:${this.candidates.join(":")}`);
-    const register = scope.get("private.cycles") || {};
+    const key = (this.group !== undefined)
+      ? scope.evaluate(this.group)
+      : this.candidates.toString();
+
+    const register = scope.registers.get("cycles") || {};
 
     // tslint:disable-next-line:no-let
-    let idx = register[fingerprint];
+    let idx = register[key];
 
     if (idx === undefined) {
-      idx = register[fingerprint] = 0;
+      idx = register[key] = 0;
     }
 
     const candidate = this.candidates[idx];
     idx = (idx + 1) % this.candidateCount;
-    register[fingerprint] = idx;
+    register[key] = idx;
 
-    scope.set("private.cycles", register);
+    scope.registers.set("cycles", register);
 
     writer.write(evalValue(candidate, scope));
   }

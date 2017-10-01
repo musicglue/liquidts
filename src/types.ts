@@ -73,6 +73,7 @@ export interface Options {
   blocks?: {};
   cache?: boolean;
   extname?: string;
+  registers?: Map<string | number, any>;
   root?: string[];
   strictFilters?: boolean;
   strictVariables?: boolean;
@@ -83,15 +84,19 @@ export interface ResolvedOptions extends Options {
   blocks: {};
   cache: boolean;
   extname: string;
+  registers: Map<string | number, any>;
   root: string[];
   strictFilters: boolean;
   strictVariables: boolean;
 }
 
 export interface Scope {
+  evaluate: (expr: string) => any;
   get: (str: string) => any;
   set: (str: string, val: any) => Scope;
   push: (ctx: Dict<any>) => Scope;
+
+  registers: Map<string | number, any>;
 }
 
 export type TokenType = "output" | "tag";
