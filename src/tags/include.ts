@@ -47,7 +47,9 @@ export class Include implements Tag {
     if (this.forVal) {
       const resolved = scope.evaluate(this.forVal);
       if (Array.isArray(resolved)) {
-        for (const item of resolved) {
+        // tslint:disable-next-line:no-let
+        let item: any;
+        for (item of resolved) {
           hash[varName] = item;
           await this.liquid.renderer.renderTemplates(templates, scope.push(hash), writer);
         }

@@ -94,7 +94,9 @@ export class For implements Tag {
     const renderCatcher = renderBreakCatcher(writer);
     const { renderTemplates } = this.liquid.renderer;
     try {
-      for (const ctx of contexts) {
+      // tslint:disable-next-line:no-let
+      let ctx: any;
+      for (ctx of contexts) {
         await renderTemplates(this.templates, scope.push(ctx), writer).catch(renderCatcher);
       }
     } catch (err) {

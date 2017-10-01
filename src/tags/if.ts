@@ -49,7 +49,9 @@ export class If implements Tag {
 
   public async render(writer: Writeable, scope: Scope) {
     const { renderTemplates } = this.liquid.renderer;
-    for (const branch of this.branches) {
+    // tslint:disable-next-line:no-let
+    let branch: Branch;
+    for (branch of this.branches) {
       if (isTruthy(evalExp(branch.cond, scope))) {
         await renderTemplates(branch.templates, scope, writer);
         return;

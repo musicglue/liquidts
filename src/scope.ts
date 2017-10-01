@@ -31,7 +31,9 @@ export class Scope implements t.Scope {
       return val;
     }
 
-    for (const scope of this.scopes) {
+    // tslint:disable-next-line:no-let
+    let scope: Scope;
+    for (scope of this.scopes) {
       if (scope !== undefined) {
         val = scope.get(path, false);
         if (val != null) {

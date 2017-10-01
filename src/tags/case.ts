@@ -46,7 +46,9 @@ export class Case implements Tag {
 
   public async render(writer: Writeable, scope: Scope) {
     const cond = evalExp(this.cond, scope);
-    for (const branch of this.cases) {
+    // tslint:disable-next-line:no-let
+    let branch: CaseWhen;
+    for (branch of this.cases) {
       const val = evalExp(branch.val, scope);
       if (val === cond) {
         await this.liquid.renderer.renderTemplates(branch.templates, scope, writer);

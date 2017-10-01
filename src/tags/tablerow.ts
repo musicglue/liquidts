@@ -53,8 +53,10 @@ export class TableRow implements Tag {
     let row: number = 0;
     let col: number;
     let idx: number = 0;
+
+    let item: any;
     // tslint:enable:no-let
-    for (const item of slice(collection, offset, offset + limit)) {
+    for (item of slice(collection, offset, offset + limit)) {
       row = Math.floor(idx / cols) + 1;
       col = idx % cols + 1;
 

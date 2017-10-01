@@ -18,7 +18,9 @@ export class Renderer {
     scope: Scope,
     writer: Writeable,
   ): Promise<void> => {
-    for (const template of templates) {
+    // tslint:disable-next-line:no-let
+    let template: Template;
+    for (template of templates) {
       await this.renderTemplate(template, scope, writer).catch(renderCatcher(template));
     }
   };
