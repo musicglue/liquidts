@@ -39,9 +39,7 @@ export class Cycle implements Tag {
   }
 
   public async render(writer: Writeable, scope: Scope) {
-    const key = (this.group !== undefined)
-      ? scope.evaluate(this.group)
-      : this.candidates.toString();
+    const key = this.group !== undefined ? scope.evaluate(this.group) : this.candidates.toString();
 
     const register = scope.registers.get("cycles") || {};
 
@@ -62,5 +60,4 @@ export class Cycle implements Tag {
   }
 }
 
-export const cycle = (liquid: Engine) =>
-  liquid.registerTag("cycle", TagFactory(Cycle, liquid));
+export const cycle = (liquid: Engine) => liquid.registerTag("cycle", TagFactory(Cycle, liquid));

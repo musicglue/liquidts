@@ -1,8 +1,8 @@
+import { map } from "lodash";
 import { FilterContext } from "./filterContext";
 import * as lexical from "./lexical";
 import { evalValue } from "./syntax";
 import * as t from "./types";
-import { map } from "lodash";
 import { assert } from "./util/assert";
 
 const valueRE = new RegExp(`${lexical.value.source}`, "g");

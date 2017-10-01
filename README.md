@@ -13,6 +13,10 @@ Installation:
 npm install --save liquidts
 ```
 
+## Concerns
+
+- [ ] Performance with large numbers of blocks needs to be investigated, especially in loop situations
+
 ## Rendering
 
 Performance with strings in Node is atrocious, so we try and avoid manipulating them wherever possible. There is a naive

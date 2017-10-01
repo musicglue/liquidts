@@ -12,7 +12,7 @@ export const evalExp = (exp: string, scope: Scope): Literal => {
   for (const regexp of lexical.quoteBalancedOperators) {
     if (regexp.source) {
       // tslint:disable-next-line:no-conditional-assignment
-      if (match = exp.match(regexp)) {
+      if ((match = exp.match(regexp))) {
         const l = evalExp(match[1], scope);
         const op = operators[match[2].trim()];
         const r = evalExp(match[3], scope);
@@ -22,7 +22,7 @@ export const evalExp = (exp: string, scope: Scope): Literal => {
   }
 
   // tslint:disable-next-line:no-conditional-assignment
-  if (match = exp.match(lexical.rangeLine)) {
+  if ((match = exp.match(lexical.rangeLine))) {
     const low = evalValue(match[1], scope);
     const high = evalValue(match[2], scope);
     const range = [];

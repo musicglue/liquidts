@@ -1,11 +1,9 @@
-import { isObject, isString } from "lodash";
+import { isObject, isString, map, reverse, slice } from "lodash";
 import { Engine } from "../";
 import * as lexical from "../lexical";
-import { evalExp } from "../syntax";
 import { Dict, Scope, Tag, TagToken, Template, Token, Writeable } from "../types";
 import { assert } from "../util/assert";
-import { RenderBreakError } from "../util/error";
-import { TagFactory } from "./utils";
+import { renderBreakCatchAll, renderBreakCatcher, TagFactory } from "./utils";
 
 const re = new RegExp(
   `^(${lexical.identifier.source})\\s+in\\s+` +
@@ -56,7 +54,7 @@ export class For implements Tag {
 
   public async render(writer: Writeable, scope: Scope, hash: Dict<any>) {
     // tslint:disable-next-line:no-let
-    let collection = evalExp(this.collection, scope);
+    let collection = scope.evaluate(this.collection);
 
     if (!Array.isArray(collection)) {
       if (isString(collection) && collection.length) {
@@ -73,14 +71,14 @@ export class For implements Tag {
 
     const length = collection.length;
     const offset = hash.offset || 0;
-    const limit = hash.limit === undefined ? length : hash.limit;
+    const limit = hash.limit || length;
 
-    collection = collection.slice(offset, offset + limit);
+    collection = slice(collection, offset, offset + limit);
     if (this.reversed) {
-      collection.reverse();
+      reverse(collection);
     }
 
-    const contexts = collection.map((item, i) => ({
+    const contexts = map(collection, (item, i) => ({
       [this.variable]: item,
       forloop: {
         first: i === 0,
@@ -93,25 +91,22 @@ export class For implements Tag {
       },
     }));
 
-    const render = (ctx: Dict<any>) =>
-      this.liquid.renderer
-        .renderTemplates(this.templates, scope.push(ctx), writer)
-        .catch((e: Error) => {
-          if (e instanceof RenderBreakError) {
-            writer.write(e.resolvedHTML);
-            if (e.message === "continue") {
-              return;
-            }
-          }
-          throw e;
-        });
-
-    await Promise.all(contexts.map(render)).catch(e => {
-      if (e instanceof RenderBreakError && e.message === "break") {
-        return;
+    const renderCatcher = renderBreakCatcher(writer);
+    const { renderTemplates } = this.liquid.renderer;
+    try {
+      for (const ctx of contexts) {
+        await renderTemplates(this.templates, scope.push(ctx), writer).catch(renderCatcher);
       }
-      throw e;
-    });
+    } catch (err) {
+      renderBreakCatchAll(err);
+    }
+
+    // await Promise
+    //   .all(map(contexts, ctx =>
+    //     this.liquid.renderer
+    //       .renderTemplates(this.templates, scope.push(ctx), writer)
+    //       .catch(renderBreakCatcher)))
+    //   .catch(renderBreakCatchAll);
   }
 }
 

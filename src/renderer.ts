@@ -1,4 +1,3 @@
-import { map } from "lodash";
 import { evalExp } from "./syntax";
 import { TagInstance } from "./tagInstance";
 import { ControlTemplate, OutputTemplate, Scope, Template, Writeable } from "./types";
@@ -14,17 +13,15 @@ const renderCatcher = (template: Template) => (err: Error) => {
 
 // tslint:disable:no-this
 export class Renderer {
-  public async renderTemplates(
+  public renderTemplates = async (
     templates: Template[],
     scope: Scope,
     writer: Writeable,
-  ): Promise<void> {
-    await Promise.all(
-      map(templates, template =>
-        this.renderTemplate(template, scope, writer).catch(renderCatcher(template)),
-      ),
-    );
-  }
+  ): Promise<void> => {
+    for (const template of templates) {
+      await this.renderTemplate(template, scope, writer).catch(renderCatcher(template));
+    }
+  };
 
   public renderTemplate = async (
     template: Template,

@@ -1,4 +1,4 @@
-import { capitalize, join, map, round, sortBy, split, uniq, zipObject, slice } from "lodash";
+import { capitalize, join, map, round, slice, sortBy, split, uniq, zipObject } from "lodash";
 import * as strftime from "strftime";
 import { Engine } from ".";
 import { isTruthy } from "./syntax";
@@ -38,7 +38,7 @@ export const filters: Dict<Function> = {
   capitalize,
   ceil: (v: number) => Math.ceil(v),
   date: (v: string | Date, arg: string): string => {
-    const d = (v === "now") ? new Date() : v;
+    const d = v === "now" ? new Date() : v;
     return d instanceof Date ? strftime(d, arg) : "";
   },
   default: (v: any, arg: any) => (isTruthy(v) ? v : arg),
@@ -73,11 +73,9 @@ export const filters: Dict<Function> = {
   rstrip: (str: string) => stringify(str).replace(/\s+$/, ""),
   size: (v: string | any[]) => v.length,
   slice: (v: string | any[], begin: number, length: number = 1) => {
-    return (typeof v === "string")
-      ? v.substr(begin, length)
-      : slice(v, begin, begin + length);
+    return typeof v === "string" ? v.substr(begin, length) : slice(v, begin, begin + length);
   },
-  sort: (v: any[], property?: string | number) => property ? sortBy(v, property) : sortBy(v),
+  sort: (v: any[], property?: string | number) => (property ? sortBy(v, property) : sortBy(v)),
   split: (v: any, arg: string) => stringify(v).split(arg),
   strip: (v: any) => stringify(v).trim(),
   strip_html: (v: any) => stringify(v).replace(/<\/?\s*\w+\s*\/?>/g, ""),

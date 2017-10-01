@@ -138,12 +138,11 @@ export const resolveOptions = (opts?: Options): ResolvedOptions => ({
   cache: _.get(opts, "cache", false),
   extname: _.get(opts, "extname", ".liquid"),
   registers: _.get(opts, "registers", new Map()),
-  root:  normalizeStringArray(_.get(opts, "root", [])),
+  root: normalizeStringArray(_.get(opts, "root", [])),
   strictFilters: _.get(opts, "strictFilters", false),
   strictVariables: _.get(opts, "strictVariables", false),
 });
 
-export default (opts?: Options): Engine =>
-  new Engine(resolveOptions(opts));
+export default (opts?: Options): Engine => new Engine(resolveOptions(opts));
 
 export { errors, lexical, syntax };
