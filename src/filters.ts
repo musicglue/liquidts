@@ -1,4 +1,4 @@
-import { capitalize, round, uniq, zipObject } from "lodash";
+import { capitalize, join, map, round, sortBy, split, uniq, zipObject, slice } from "lodash";
 import * as strftime from "strftime";
 import { Engine } from ".";
 import { isTruthy } from "./syntax";
@@ -12,13 +12,13 @@ const escapeMap: Dict<string> = {
   ">": "&gt;",
 };
 
-const unescapeMap: Dict<string> = zipObject(Object.keys(escapeMap), Object.values(escapeMap));
+const unescapeMap: Dict<string> = zipObject(Object.values(escapeMap), Object.keys(escapeMap));
 
 const stringify = (obj: any): string => obj + "";
 
 const escape = (str: any) => stringify(str).replace(/&|<|>|"|'/g, m => escapeMap[m]);
 
-const unescape = (str: any) =>
+const unescape = (str: any): string =>
   stringify(str).replace(/&(amp|lt|gt|#34|#39);/g, m => unescapeMap[m]);
 
 const getFixed = (v: number): number => {
@@ -38,7 +38,7 @@ export const filters: Dict<Function> = {
   capitalize,
   ceil: (v: number) => Math.ceil(v),
   date: (v: string | Date, arg: string): string => {
-    const d = v === "now" ? new Date() : v;
+    const d = (v === "now") ? new Date() : v;
     return d instanceof Date ? strftime(d, arg) : "";
   },
   default: (v: any, arg: any) => (isTruthy(v) ? v : arg),
@@ -46,18 +46,19 @@ export const filters: Dict<Function> = {
   downcase: (v: string) => v.toLowerCase(),
   escape,
   escape_once: (str: string) => escape(unescape(str)),
-  first: (v: any[]) => v[0],
+  first: ([v]: any[]) => v,
   floor: (v: number) => Math.floor(v),
-  join: (v: any[], arg: string) => v.join(arg),
+  join: (arr: any[], delim: string = "") => join(arr, delim),
+  json: (obj: any): string => JSON.stringify(obj),
   last: (v: any[]) => v[v.length - 1],
   lstrip: (v: any) => stringify(v).replace(/^\s+/, ""),
-  map: (arr: any[], arg: number) => arr.map(v => v[arg]), // check this one
+  map: (arr: any[], arg: string | number) => map(arr, (v: any) => v[arg]), // check this one
   minus: bindFixed((v: number, arg: number) => v - arg),
   modulo: bindFixed((v: number, arg: number) => v % arg),
-  newline_to_br: (v: string) => v.replace(/\n/g, "<br />"),
+  newline_to_br: (v: string) => v.replace(/\n/g, "<br/>"),
   plus: bindFixed((v: number, arg: number) => Number(v) + Number(arg)),
   prepend: (v: string, arg: string) => `${arg}${v}`,
-  remove: (v: string, arg: string) => v.split(arg).join(""),
+  remove: (v: string, arg: string) => join(split(v, arg), ""),
   remove_first: (v: string, l: string) => v.replace(l, ""),
   replace: (v: any, pattern: string, replacement: string) =>
     stringify(v)
@@ -71,8 +72,12 @@ export const filters: Dict<Function> = {
   },
   rstrip: (str: string) => stringify(str).replace(/\s+$/, ""),
   size: (v: string | any[]) => v.length,
-  slice: (v: string, begin: number, length: number = 1) => v.substr(begin, length),
-  sort: (v: any[], arg?: (a: any, b: any) => number) => v.sort(arg),
+  slice: (v: string | any[], begin: number, length: number = 1) => {
+    return (typeof v === "string")
+      ? v.substr(begin, length)
+      : slice(v, begin, begin + length);
+  },
+  sort: (v: any[], property?: string | number) => property ? sortBy(v, property) : sortBy(v),
   split: (v: any, arg: string) => stringify(v).split(arg),
   strip: (v: any) => stringify(v).trim(),
   strip_html: (v: any) => stringify(v).replace(/<\/?\s*\w+\s*\/?>/g, ""),
@@ -89,6 +94,7 @@ export const filters: Dict<Function> = {
     const arr = v.split(" ");
     return arr.length > l ? `${arr.slice(0, l).join(" ")}${o}` : arr.slice(0, l).join(" ");
   },
+  unescape,
   uniq,
   upcase: (str: any) => stringify(str).toUpperCase(),
   url_encode: encodeURIComponent,

@@ -3,6 +3,7 @@ import * as lexical from "./lexical";
 import { evalValue } from "./syntax";
 import * as t from "./types";
 import { map } from "lodash";
+import { assert } from "./util/assert";
 
 const valueRE = new RegExp(`${lexical.value.source}`, "g");
 
@@ -13,39 +14,34 @@ export class FilterInstance implements t.FilterInstance {
   public args: any[];
 
   constructor(str: string, context: FilterContext) {
-    const match = lexical.filterLine.exec(str);
-    if (!match) {
-      throw new Error(`illegal filter: ${str}`);
-    }
+    // tslint:disable-next-line:no-let
+    let match: RegExpExecArray | null;
+    match = assert(lexical.filterLine.exec(str), `illegal filter: ${str}`);
 
     const name = match[1];
     const argList = match[2] || "";
     const filter = context.get(name);
+
+    this.args = [];
+
     if (typeof filter !== "function") {
-      if (context.options.strictFilters) {
-        throw new TypeError(`undefined filter: ${name}`);
-      }
+      assert(!context.options.strictFilters, `undefined filter: ${name}`);
 
       this.name = name;
       this.filter = (x: any) => x;
-      this.args = [];
 
       return;
     }
 
-    const args: any[] = [];
-    // tslint:disable-next-line:no-let
-    let argMatch: RegExpMatchArray | null;
     // tslint:disable-next-line:no-conditional-assignment
-    while ((argMatch = valueRE.exec(argList.trim()))) {
+    while ((match = valueRE.exec(argList.trim()))) {
       const v = match[0];
       const re = new RegExp(`${v}\\s*:`, "g");
-      re.test(match.input) ? args.push(`'${v}'`) : args.push(v);
+      re.test(match.input) ? this.args.push(`'${v}'`) : this.args.push(v);
     }
 
     this.name = name;
     this.filter = filter;
-    this.args = args;
   }
 
   public render(output: any, scope: any) {
