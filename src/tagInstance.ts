@@ -36,6 +36,6 @@ export class TagInstance implements t.TagInstance {
     const obj = hash(this.token.args || "", scope);
     const impl = this.tagImpl;
 
-    return await impl.render(writer, scope, obj);
+    await impl.render(writer, scope, obj);
   }
 }

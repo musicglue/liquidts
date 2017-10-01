@@ -34,4 +34,4 @@ export class Raw implements Tag {
   }
 }
 
-export const raw = (liquid: Engine) => () => liquid.registerTag("raw", TagFactory(Raw, liquid));
+export const raw = (liquid: Engine) => liquid.registerTag("raw", TagFactory(Raw, liquid));

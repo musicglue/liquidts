@@ -1,5 +1,6 @@
 import { TagInstance } from "./tagInstance";
 import { Tag, TagFactory, TagToken, Token } from "./types";
+import { assert } from "./util/assert";
 
 export class TagContext {
   public tags: Map<string, TagFactory>;
@@ -9,18 +10,11 @@ export class TagContext {
   }
 
   public get(name: string): TagFactory {
-    const tag = this.tags.get(name);
-    if (!tag) {
-      // tslint:disable-next-line:no-console
-      this.tags.forEach((_, key) => console.log(key));
-      throw new Error(`Could not find tag with name: ${name}`);
-    }
-    return tag;
+    return assert(this.tags.get(name), `Could not find tag with name: ${name}`);
   }
 
   public build(name: string): Tag {
-    const tag = this.get(name);
-    return tag();
+    return this.get(name)();
   }
 
   public register(name: string, tag: TagFactory): void {

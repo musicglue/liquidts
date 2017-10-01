@@ -52,7 +52,7 @@ export class Engine implements EnginePrototype {
 
   public async render(tpl: Template | Template[], ctx?: any, opts?: Options) {
     const options = Object.assign({}, this.options, opts);
-    const scope = new Scope(ctx, [], options);
+    const scope = new Scope(Object.assign({}, ctx), [], options);
     const writer = fromNullable(options.writer).getOrElse(() => new WriteBuffer());
     await this.renderer.renderTemplates(_.castArray(tpl), scope, writer);
     return writer;
@@ -88,7 +88,7 @@ export class Engine implements EnginePrototype {
 
   public async lookup(filepath: string, extraRoots: string[] = []): Promise<string> {
     const roots = _.uniq(this.options.root.concat(extraRoots));
-    const paths = roots.map(root => path.resolve(root, filepath));
+    const paths = _.map(roots, root => path.resolve(root, filepath));
 
     for (const p in paths) {
       if (await statFileAsync(p)) {

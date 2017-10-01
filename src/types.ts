@@ -89,7 +89,7 @@ export interface ResolvedOptions extends Options {
 }
 
 export interface Scope {
-  get: (str: string) => Dict<any> | undefined;
+  get: (str: string) => any;
   set: (str: string, val: any) => Scope;
   push: (ctx: Dict<any>) => Scope;
 }

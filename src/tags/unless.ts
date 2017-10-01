@@ -42,5 +42,5 @@ export class Unless implements Tag {
   }
 }
 
-export const unless = (liquid: Engine) => () =>
+export const unless = (liquid: Engine) =>
   liquid.registerTag("unless", TagFactory(Unless, liquid));

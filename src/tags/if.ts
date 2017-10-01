@@ -61,4 +61,4 @@ export class If implements Tag {
   }
 }
 
-export const ifTag = (liquid: Engine) => () => liquid.registerTag("if", TagFactory(If, liquid));
+export const ifTag = (liquid: Engine) => liquid.registerTag("if", TagFactory(If, liquid));
