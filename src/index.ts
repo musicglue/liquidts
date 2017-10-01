@@ -1,6 +1,5 @@
 import { fromNullable } from "fp-ts/lib/Option";
 import * as _ from "lodash";
-import * as path from "path";
 import { WriteBuffer } from "./buffer";
 import { FilterContext } from "./filterContext";
 import * as filters from "./filters";
@@ -12,12 +11,13 @@ import * as syntax from "./syntax";
 import { TagContext } from "./tagContext";
 import * as tags from "./tags";
 import * as tokenizer from "./tokenizer";
-import { Dict, EnginePrototype, Options, ResolvedOptions, Template } from "./types";
+import { EnginePrototype, FileSystem, Options, ResolvedOptions, Template } from "./types";
 import * as errors from "./util/error";
-import { readFileAsync, statFileAsync } from "./util/fs";
+
+export { FileSystem } from "./lib/filesystem";
 
 export class Engine implements EnginePrototype {
-  public cache?: Dict<any>;
+  public fileSystem: FileSystem | undefined;
   public options: ResolvedOptions;
   public tag: TagContext;
   public filter: FilterContext;
@@ -25,8 +25,8 @@ export class Engine implements EnginePrototype {
   public renderer: Renderer;
 
   constructor(options: ResolvedOptions) {
-    if (options.cache) {
-      this.cache = new Map();
+    if (options.fileSystem) {
+      this.fileSystem = options.fileSystem;
     }
     this.options = options;
     this.tag = new TagContext();
@@ -38,7 +38,7 @@ export class Engine implements EnginePrototype {
     filters.registerAll(this);
   }
 
-  public parse(html: string, filepath?: string) {
+  public parse = (html: string, filepath?: string) => {
     const tokens = tokenizer.parse(html, filepath, this.options);
     return this.parser.parse(tokens);
   }
@@ -61,12 +61,12 @@ export class Engine implements EnginePrototype {
 
   public renderFile(filepath: string, ctx: any, opts: Options) {
     const options = Object.assign({}, opts);
-    return this.getTemplate(filepath, opts.root).then(templates =>
-      this.render(templates, ctx, options),
-    );
+    return this
+      .getTemplate(filepath)
+      .then(templates => this.render(templates, ctx, options));
   }
 
-  public async evalOutput(str: string, scope: any) {
+  public async evalOutput(str: string, scope: any): Promise<string> {
     const tpl = this.parser.parseOutput(str.trim());
     const buf = new WriteBuffer();
     await this.renderer.evalOutput(tpl, scope, buf);
@@ -82,63 +82,18 @@ export class Engine implements EnginePrototype {
     return this.tag.register(name, tag);
   }
 
-  public async lookup(filepath: string, extraRoots: string[] = []): Promise<string> {
-    const roots = _.uniq(this.options.root.concat(extraRoots));
-    const paths = _.map(roots, root => path.resolve(root, filepath));
-
-    for (const p in paths) {
-      if (await statFileAsync(p)) {
-        return p;
-      }
+  public getTemplate(filepath: string): Promise<Template[]> {
+    if (this.fileSystem === undefined) {
+      return Promise.reject("fileSystem not enabled in this engine");
     }
 
-    throw new Error(`Failed to lookup ${filepath}`);
-  }
-
-  public getTemplate(filepath: string, root: string[] = []): Promise<Template[]> {
-    if (!path.extname(filepath)) {
-      filepath += this.options.extname;
-    }
-    return this.lookup(filepath, root).then(resolved => {
-      if (this.cache) {
-        const cache = this.cache;
-        const tpl = cache[resolved];
-        if (tpl) {
-          return Promise.resolve(tpl);
-        }
-
-        return readFileAsync(filepath)
-          .then(buf => buf.toString("utf-8"))
-          .then(str => this.parse(str))
-          .then(tmpl => {
-            cache.set(filepath, tmpl);
-            return tmpl;
-          });
-      } else {
-        return readFileAsync(filepath)
-          .then(buf => buf.toString("utf-8"))
-          .then(str => this.parse(str, filepath));
-      }
-    });
+    return this.fileSystem.get(filepath, this.parse);
   }
 }
 
-const normalizeStringArray = (value: any): string[] => {
-  if (Array.isArray(value)) {
-    return value;
-  }
-  if (_.isString(value)) {
-    return [value];
-  }
-  return [];
-};
-
 export const resolveOptions = (opts?: Options): ResolvedOptions => ({
-  blocks: _.get(opts, "blocks", {}),
-  cache: _.get(opts, "cache", false),
-  extname: _.get(opts, "extname", ".liquid"),
+  fileSystem: _.get(opts, "fileSystem"),
   registers: _.get(opts, "registers", new Map()),
-  root: normalizeStringArray(_.get(opts, "root", [])),
   strictFilters: _.get(opts, "strictFilters", false),
   strictVariables: _.get(opts, "strictVariables", false),
 });
