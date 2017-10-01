@@ -16,6 +16,7 @@ import { Options, ResolvedOptions } from "./types";
 import * as errors from "./util/error";
 
 export { FileSystem } from "./lib/filesystem";
+export { tagUtils } from "./tags";
 
 export class Engine implements types.EnginePrototype {
   public fileSystem: types.FileSystem | undefined;

@@ -15,6 +15,7 @@ import { layout } from "./layout";
 import { raw } from "./raw";
 import { tablerow } from "./tablerow";
 import { unless } from "./unless";
+import * as tagUtils from "./utils";
 
 export const registerAll = (engine: Engine) => {
   assign(engine);
@@ -32,4 +33,8 @@ export const registerAll = (engine: Engine) => {
   raw(engine);
   tablerow(engine);
   unless(engine);
+};
+
+export {
+  tagUtils,
 };
