@@ -60,7 +60,7 @@ export class Engine implements types.EnginePrototype {
     return this.render(tpls, ctx, opts);
   }
 
-  public renderFile(filepath: string, ctx: any, opts: types.Options) {
+  public renderFile(filepath: string, ctx?: any, opts?: types.Options) {
     const options = Object.assign({}, opts);
     return this.getTemplate(filepath).then(templates => this.render(templates, ctx, options));
   }
