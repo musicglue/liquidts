@@ -60,13 +60,12 @@ engine.render(tpl, {name: 'alice'})
 
 The full list of options for `Liquid()` is listed as following:
 
-* `root` is a directory or an array of directories to resolve layouts and includes, as well as the filename passed in when calling `.renderFile()`.
-If an array, the files are looked up in the order they occur in the array.
-Defaults to `["."]`
+* `fileSystem` needs to be an object implementing `FileSystem` if
+you wish to render files rather than ad-hoc strings, or to use `include`
+tags
 
-* `extname` is used to lookup the template file when filepath doesn't include an extension name. Defaults to `".liquid"`
-
-* `cache` indicates whether or not to cache resolved templates. Defaults to `false`.
+* `registers` are a globally available `Map` of settings and the like
+that can be consumed by tags but not templates
 
 * `strictFilters` is used to enable strict filter existence. If set to `false`, undefined filters will be rendered as empty string. Otherwise, undefined filters will cause an exception. Defaults to `false`.
 
