@@ -55,7 +55,7 @@ export const filterLine = new RegExp(`^${filterCapture.source}$`);
 export const operators = [/\s+or\s+/, /\s+and\s+/, /==|!=|<=|>=|<|>|\s+contains\s+/];
 
 export const quoteBalancedOperators = operators.map(
-  regex => new RegExp(`${quoteBalanced.source}(${regex.source})${quoteBalanced.source}`),
+  regex => new RegExp(`(${quoteBalanced.source})(${regex.source})(${quoteBalanced.source})`),
 );
 
 export const isInteger: StringChecker = str => integerLine.test(str);

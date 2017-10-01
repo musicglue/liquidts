@@ -1,5 +1,7 @@
 # liquidts
 
+[![CircleCI](https://circleci.com/gh/musicglue/liquidts/tree/master.svg?style=svg)](https://circleci.com/gh/musicglue/liquidts/tree/master)
+
 This originated as a typescriptification of [harttle/liquidjs][harrtle/liquidjs], itself based on [liquid-node][liquid-node]
 and huge thanks are offered breaking the back of implementing liquid in javascript. As I started work, it was obvious
 that it wasn't going to remain analogous with the original project, and hence making this a hard fork

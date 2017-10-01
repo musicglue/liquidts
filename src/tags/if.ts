@@ -48,16 +48,15 @@ export class If implements Tag {
   }
 
   public async render(writer: Writeable, scope: Scope) {
-    const { renderer } = this.liquid;
+    const { renderTemplates } = this.liquid.renderer;
     for (const branch of this.branches) {
-      const cond = evalExp(branch.cond, scope);
-      if (isTruthy(cond)) {
-        await renderer.renderTemplates(branch.templates, scope, writer);
+      if (isTruthy(evalExp(branch.cond, scope))) {
+        await renderTemplates(branch.templates, scope, writer);
         return;
       }
     }
 
-    await renderer.renderTemplates(this.elseTemplates, scope, writer);
+    await renderTemplates(this.elseTemplates, scope, writer);
   }
 }
 

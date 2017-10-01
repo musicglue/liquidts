@@ -10,14 +10,12 @@ export const evalExp = (exp: string, scope: Scope): Literal => {
   let match: RegExpMatchArray | null;
 
   for (const regexp of lexical.quoteBalancedOperators) {
-    if (regexp.source) {
-      // tslint:disable-next-line:no-conditional-assignment
-      if ((match = exp.match(regexp))) {
-        const l = evalExp(match[1], scope);
-        const op = operators[match[2].trim()];
-        const r = evalExp(match[3], scope);
-        return op(l, r);
-      }
+    // tslint:disable-next-line:no-conditional-assignment
+    if ((match = exp.match(regexp))) {
+      const l = evalExp(match[1], scope);
+      const op = operators[match[2].trim()];
+      const r = evalExp(match[3], scope);
+      return op(l, r);
     }
   }
 
