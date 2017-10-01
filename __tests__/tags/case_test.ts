@@ -7,7 +7,7 @@ const tmpl = engine.parse(`
 {% case foo %}
 {% when 'bar' %}
 "BAR"
-{% when 'baz' %}
+{% when baz %}
 "BAZ
 {% else %}
 "OTHER"
@@ -24,7 +24,7 @@ describe("Tags", () => {
     });
 
     test("2nd branch", async () => {
-      const res = await await engine.render(tmpl, { foo: "baz" }).then(read);
+      const res = await await engine.render(tmpl, { foo: "baz", baz: "baz" }).then(read);
       expect(res).not.toContain("BAR");
       expect(res).toContain("BAZ");
       expect(res).not.toContain("OTHER");
