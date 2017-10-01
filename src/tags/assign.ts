@@ -23,7 +23,7 @@ class Assign implements Tag {
   }
 
   public async render(_: Writeable, scope: Scope) {
-    scope.set(this.key, this.liquid.evalOutput(this.value, scope));
+    scope.set(this.key, await this.liquid.evalOutput(this.value, scope));
   }
 }
 

@@ -1,14 +1,12 @@
 import * as path from "path";
 import Liquid, { Engine, FileSystem } from "../../src";
 import * as t from "../../src/types";
+import { identity, read } from "../utils";
 
 const simpleTmpl = "{% include 'test_include' %}";
 const variableTmpl = "{% include var %}";
 const forTmpl = "{% include var for foo %}";
 const simpleWithTmpl = "{% include var with foo %}";
-
-const identity = (r: any) => r;
-const read = (r: any) => r.read();
 
 describe("Tags", () => {
   // tslint:disable:no-let
