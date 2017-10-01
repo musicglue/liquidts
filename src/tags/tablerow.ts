@@ -1,3 +1,4 @@
+import { slice } from "lodash";
 import { Engine } from "../";
 import * as lexical from "../lexical";
 import { evalExp } from "../syntax";
@@ -48,12 +49,12 @@ export class TableRow implements Tag {
     const cols = assert(hash.cols, `illegal cols: ${hash.cols}`);
 
     writer.write("<table>");
-    // tslint:disable-next-line:no-let
+    // tslint:disable:no-let
     let row: number = 0;
-    // tslint:disable-next-line:no-let
     let col: number;
-    await collection.slice(offset, offset + limit).map(async (item, idx) => {
-      const ctx = { [this.variable]: item };
+    let idx: number = 0;
+    // tslint:enable:no-let
+    for (const item of slice(collection, offset, offset + limit)) {
       row = Math.floor(idx / cols) + 1;
       col = idx % cols + 1;
 
@@ -65,9 +66,14 @@ export class TableRow implements Tag {
       }
 
       writer.write(`<td class="col${col}">`);
-      await this.liquid.renderer.renderTemplates(this.templates, scope.push(ctx), writer);
+      await this.liquid.renderer.renderTemplates(
+        this.templates,
+        scope.push({ [this.variable]: item }),
+        writer,
+      );
       writer.write("</td>");
-    });
+      idx++;
+    }
 
     if (row > 0) {
       writer.write("</tr>");

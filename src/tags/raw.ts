@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import { get, join, map } from "lodash";
 import { Engine } from "../index";
 import { Tag, TagToken, Token, Writeable } from "../types";
 import { TagFactory } from "./utils";
@@ -30,7 +30,7 @@ export class Raw implements Tag {
   }
 
   public async render(writer: Writeable) {
-    writer.write(this.tokens.map(t => t.raw).join(""));
+    writer.write(join(map(this.tokens, t => t.raw), ""));
   }
 }
 

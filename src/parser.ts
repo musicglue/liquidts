@@ -4,6 +4,7 @@ import { ParsingStream } from "./parsingStream";
 import { TagContext } from "./tagContext";
 import { OutputTemplate, OutputToken, TagToken, Template, Token } from "./types";
 import { assert, typeIsControlTemplate } from "./util/assert";
+import { map } from "lodash";
 
 export class Parser {
   private tags: TagContext;
@@ -29,7 +30,7 @@ export class Parser {
     }
 
     return {
-      filters: filters.map(filter => this.filters.construct(filter)),
+      filters: map(filters, filter => this.filters.construct(filter)),
       initial,
       token,
       type: "output",
@@ -51,7 +52,7 @@ export class Parser {
       case "output":
         return this.parseOutput(token.value, token);
       default:
-        return { ...token, token };
+        return Object.assign({}, token, { token });
     }
   }
 
